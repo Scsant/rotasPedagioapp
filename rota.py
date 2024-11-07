@@ -3,6 +3,7 @@ import requests
 from lxml import etree
 from datetime import datetime, timedelta
 import os
+
 # Função para remover namespaces do XML
 def remove_namespaces(tree):
     """Remove namespaces de um elemento XML e seus filhos."""
@@ -10,8 +11,6 @@ def remove_namespaces(tree):
         if '}' in elem.tag:
             elem.tag = elem.tag.split('}', 1)[1]  # Remove namespace
     return tree
-
-
 
 # Obter as credenciais de variáveis de ambiente
 def autenticar_usuario():
@@ -97,7 +96,7 @@ def autenticar_usuario():
         st.error(f"Erro na requisição SOAP: {e}")
         return None
 
-# Função para consultar o custo da rota, usando a sessão autenticada
+# Função para consultar o custo da rota e dividir pelo número de eixos
 def consultar_custo_rota(nomeRota, placa, nEixos, inicioVigencia, fimVigencia, sessao):
     # URL do serviço SOAP (o mesmo da autenticação)
     url = 'https://app.viafacil.com.br/wsvp/ValePedagio'
@@ -136,14 +135,17 @@ def consultar_custo_rota(nomeRota, placa, nEixos, inicioVigencia, fimVigencia, s
         # Buscar apenas o valor da rota
         valor = response_xml.find('.//valor')
         if valor is not None:
-            return valor.text
+            # Calcular o valor por eixo
+            valor_total = float(valor.text)
+            valor_por_eixo = valor_total / nEixos
+            return valor_total, valor_por_eixo
         else:
             st.error("Erro: Não foi possível encontrar o valor na resposta.")
-            return None
+            return None, None
     
     except requests.exceptions.RequestException as e:
         st.error(f"Erro na requisição SOAP: {e}")
-        return None
+        return None, None
 
 # Função para calcular a data de hoje e adicionar 5 dias
 def calcular_datas():
@@ -179,12 +181,14 @@ if st.button("Consultar custo da rota"):
         
         # Consultar rota de ida
         st.write(f"Consultando a rota: {nomeRotaIda}")
-        valor_ida = consultar_custo_rota(nomeRotaIda, placa, nEixosIda, inicioVigencia, fimVigencia, sessao)
-        if valor_ida:
-            st.success(f"Valor da rota (ida): R$ {valor_ida}")
+        valor_ida, valor_por_eixo_ida = consultar_custo_rota(nomeRotaIda, placa, nEixosIda, inicioVigencia, fimVigencia, sessao)
+        if valor_ida is not None:
+            st.success(f"Valor total da rota (ida): R$ {valor_ida:.2f}")
+            st.success(f"Valor por eixo (ida): R$ {valor_por_eixo_ida:.2f}")
         
         # Consultar rota de volta
         st.write(f"Consultando a rota: {nomeRotaVolta}")
-        valor_volta = consultar_custo_rota(nomeRotaVolta, placa, nEixosVolta, inicioVigencia, fimVigencia, sessao)
-        if valor_volta:
-            st.success(f"Valor da rota (volta): R$ {valor_volta}")
+        valor_volta, valor_por_eixo_volta = consultar_custo_rota(nomeRotaVolta, placa, nEixosVolta, inicioVigencia, fimVigencia, sessao)
+        if valor_volta is not None:
+            st.success(f"Valor total da rota (volta): R$ {valor_volta:.2f}")
+            st.success(f"Valor por eixo (volta): R$ {valor_por_eixo_volta:.2f}")
