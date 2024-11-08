@@ -3,7 +3,8 @@ import requests
 from lxml import etree
 from datetime import datetime, timedelta
 import os
-
+# Defina a placa como um valor fixo
+placa = "CUE3J55"  # Valor fixo da placa
 # Função para remover namespaces do XML
 def remove_namespaces(tree):
     """Remove namespaces de um elemento XML e seus filhos."""
@@ -154,8 +155,7 @@ def calcular_datas():
     return hoje.strftime('%Y-%m-%d'), fim_vigencia.strftime('%Y-%m-%d')
 
 
-# Defina a placa como um valor fixo
-placa = "CUE3J55"  # Valor fixo da placa
+
 # Interface do Streamlit
 st.title("Consulta de Custo de Rotas - Vale Pedágio")
 
