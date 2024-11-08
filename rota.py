@@ -153,14 +153,16 @@ def calcular_datas():
     fim_vigencia = hoje + timedelta(days=5)
     return hoje.strftime('%Y-%m-%d'), fim_vigencia.strftime('%Y-%m-%d')
 
+
+# Input para a placa
+placa = "CPG1133"
 # Interface do Streamlit
 st.title("Consulta de Custo de Rotas - Vale Pedágio")
 
 # Input para o nome da fazenda
 fazenda = st.text_input("Digite o nome da fazenda (ex: AGUA SANTA):")
 
-# Input para a placa
-placa = st.text_input("Digite a placa do veículo (ex: CPG1133):")
+
 
 # Input para os eixos de ida e volta
 nEixosIda = st.number_input("Número de eixos na ida:", min_value=2, max_value=10, value=5)
