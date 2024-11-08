@@ -154,15 +154,13 @@ def calcular_datas():
     return hoje.strftime('%Y-%m-%d'), fim_vigencia.strftime('%Y-%m-%d')
 
 
-# Input para a placa
-placa = "CPG1133"
+# Defina a placa como um valor fixo
+placa = "CUE3J55"  # Valor fixo da placa
 # Interface do Streamlit
 st.title("Consulta de Custo de Rotas - Vale Pedágio")
 
 # Input para o nome da fazenda
 fazenda = st.text_input("Digite o nome da fazenda (ex: AGUA SANTA):")
-
-
 
 # Input para os eixos de ida e volta
 nEixosIda = st.number_input("Número de eixos na ida:", min_value=2, max_value=10, value=5)
@@ -194,3 +192,4 @@ if st.button("Consultar custo da rota"):
         if valor_volta is not None:
             st.success(f"Valor total da rota (volta): R$ {valor_volta:.2f}")
             st.success(f"Valor por eixo (volta): R$ {valor_por_eixo_volta:.2f}")
+
